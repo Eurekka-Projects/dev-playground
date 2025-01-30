@@ -12,7 +12,7 @@ function App() {
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
 
   useEffect(() => {
-    const newSocket = io('http://localhost:3000', {
+    const newSocket = io('https://dev-playground-production.up.railway.app', {
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
       autoConnect: true,

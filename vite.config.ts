@@ -9,7 +9,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/socket.io': {
-        target: 'http://localhost:3000',
+        target: 'https://dev-playground-production.up.railway.app',
         ws: true,
       },
     },
