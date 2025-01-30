@@ -131,8 +131,8 @@ io.on('connection', (socket) => {
     });
 
     gameState.status = 'playing';
-    gameState.deck = remainingDeck.slice(1);
-    gameState.trump = remainingDeck[0];
+    gameState.deck = remainingDeck;
+    gameState.trump = remainingDeck[remainingDeck.length - 1];
     gameState.currentPlayer = gameState.firstPlayer;
     gameState.roundNumber = 1;
 
