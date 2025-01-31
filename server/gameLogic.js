@@ -10,7 +10,7 @@ export const createDeck = () => {
   };
 
   const deck = [];
-  
+
   for (const suit of suits) {
     for (const value of values) {
       deck.push({
@@ -22,7 +22,15 @@ export const createDeck = () => {
     }
   }
 
-  return shuffle(deck);
+  const shuffledDeck = shuffle(deck);
+
+  // Garantindo que a primeira carta não tenha pontos 10 ou 11
+  while (shuffledDeck[0].points === 10 || shuffledDeck[0].points === 11) {
+    // Reembaralha o deck até que a primeira carta não tenha pontos 10 ou 11
+    shuffledDeck = shuffle(deck);
+  }
+
+  return shuffledDeck;
 };
 
 export const shuffle = (array) => {

@@ -35,7 +35,7 @@ let gameState = {
   trump: null,
   deck: [],
   playedCards: [],
-  whoPlayedCard:[],
+  whoPlayedCard: [],
   playedCardsHistory: [],
   winner: null,
   status: 'waiting',
@@ -120,11 +120,13 @@ io.on('connection', (socket) => {
     if (gameState.teams.team1.length !== 2 || gameState.teams.team2.length !== 2) return;
     if (!gameState.firstPlayer) return;
 
-
-   
     const deck = createDeck();
-    const { hands, remainingDeck } = dealCards(deck, MAX_PLAYERS);
 
+    gameState.trump = deck[0];
+    const newDeck = deck.slice(1)
+
+    const { hands, remainingDeck } = dealCards(newDeck, MAX_PLAYERS);
+   
     gameState.players.forEach((player, index) => {
       player.hand = hands[index];
       player.score = 0;
@@ -132,7 +134,6 @@ io.on('connection', (socket) => {
 
     gameState.status = 'playing';
     gameState.deck = remainingDeck;
-    gameState.trump = remainingDeck[remainingDeck.length - 1];
     gameState.currentPlayer = gameState.firstPlayer;
     gameState.roundNumber = 1;
 
@@ -161,7 +162,7 @@ io.on('connection', (socket) => {
     player.hand.splice(cardIndex, 1);
     if (gameState.playedCards.length < 5) {
       gameState.playedCards.push(card);
-      gameState.whoPlayedCard.push({card:card, player:player.id})  
+      gameState.whoPlayedCard.push({ card: card, player: player.id })
     }
 
 
@@ -188,7 +189,7 @@ io.on('connection', (socket) => {
 
     if (gameState.playedCards.length == 4) {
       resolveRound();
-      gameState.currentPlayer = gameState.playedCardsHistory[gameState.playedCardsHistory.length -1].win;
+      gameState.currentPlayer = gameState.playedCardsHistory[gameState.playedCardsHistory.length - 1].win;
 
     }
 
@@ -211,9 +212,7 @@ io.on('connection', (socket) => {
       }
 
       if (gameState.status === 'playing') {
-        gameState.status = 'waiting';
-        gameState.players = [];
-        gameState.teams = { team1: [], team2: [] };
+        gameState.status = 'finished';
       }
 
       io.emit('gameState', gameState);
@@ -263,20 +262,26 @@ function resolveRound() {
   gameState.currentPlayer = winningPlayerId
 
   // Deal new cards
-  if (gameState.deck.length > 0) {
-    gameState.players.forEach(player => {
-      if (player.hand.length < 3) {
-        const newCard = gameState.deck.pop();
-        if (newCard) {
-          player.hand.push(newCard);
+  if (gameState.deck.length >= 0) {
+    if (gameState.deck.length === 0) {
+      player.hand.push(gameState.trump)
+     }
+    else {
+      gameState.players.forEach(player => {
+        console.log('dando carta:' + playerName + ' hand:' + player.hand)
+        if (player.hand.length < 3) {
+          const newCard = gameState.deck.pop();
+          if (newCard) {
+            player.hand.push(newCard);
+          }
         }
-      }
-    });
+      });
+     }
   }
 
   let round = {
     cards: gameState.whoPlayedCard,
-    win: winningPlayerId, 
+    win: winningPlayerId,
     teamWin: winningTeam
   }
   gameState.playedCardsHistory.push(round);

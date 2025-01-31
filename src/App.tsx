@@ -4,6 +4,7 @@ import { GameBoard } from './components/GameBoard';
 import { WaitingRoom } from './components/WaitingRoom';
 import { TeamSelection } from './components/TeamSelection';
 import { GameState, Card } from './types/game';
+import { Finish } from './components/finish';
 
 function App() {
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -18,6 +19,8 @@ function App() {
       autoConnect: true,
       transports: ['websocket', 'polling']
     });
+
+    
 
     newSocket.on('connect', () => {
       console.log('Connected to server');
@@ -127,6 +130,18 @@ function App() {
         onStartGame={handleStartGame}
         firstPlayer = {handleTeamSelectedFirstPlayer}
         currentPlayerId={socket?.id}
+      />
+    );
+  }
+
+ 
+
+  if (gameState.status === 'finished') {
+    return (
+      <Finish
+        players={gameState.teams}
+        playersScore={gameState.teamScores}  
+        onStartGame={handleStartGame}
       />
     );
   }
